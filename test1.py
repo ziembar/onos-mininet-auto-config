@@ -68,7 +68,8 @@ try:
         
         sorted_paths.append((path, path_length, path_bw))
     sorted_paths = sorted(sorted_paths, key=lambda rekord: rekord[1])
-    print(sorted_paths[1])
+    for path in sorted_paths:
+        print(path)
 
 
 
