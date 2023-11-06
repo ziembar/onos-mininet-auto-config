@@ -1,5 +1,5 @@
 {
-	"devices": [
+	"hosts": [
         {
 			"name": "Londyn",
             "links": [
@@ -89,7 +89,9 @@
                     "linkId": 10
                 }
             ]
-		},
+		}
+    ],
+    "switches": [
         {
             "name": "s1",
             "deviceId": "0000000000000001",
