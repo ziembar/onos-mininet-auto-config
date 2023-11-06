@@ -8,6 +8,14 @@ net = json.load(file)
 file.close()
 
 def find_device_by_name(name):
+    """Finds device by name in the net dictionary.
+    -------
+    Parameters:
+    name: string (name of the device)
+    -------
+    Returns:
+    device: dictionary/json object
+    """
     for device in net['devices']:
         if device['name'] == name:
             return device
@@ -37,6 +45,15 @@ def bootstrap():
 
 
 def calculate_paths(source_node, destination_node):
+    """Calculates all paths between source and destination node.
+    -------
+    Parameters:
+    source_node: string (name of the source node)
+    destination_node: string (name of the destination node)
+    -------
+    Returns:
+    sorted_paths: list of tuples (path, path_length, path_bw)
+    """
     all_paths = nx.all_simple_paths(G, source=source_node, target=destination_node)
 
     min_bw_path = None
