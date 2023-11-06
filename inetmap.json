@@ -1,0 +1,499 @@
+{
+	"hosts": [
+        {
+			"name": "Londyn",
+            "links": [
+                {
+                    "port": 1,
+                    "linkId": 1
+                }
+            ]
+		},
+		{
+			"name": "Paryz",
+            "links": [
+                {
+                    "port": 1,
+                    "linkId": 2
+                }
+            ]
+		},
+        {
+			"name": "Madryt",
+            "links": [
+                {
+                    "port": 1,
+                    "linkId": 3
+                }
+            ]
+		},
+		{
+			"name": "Zurych",
+            "links": [
+                {
+                    "port": 1,
+                    "linkId": 4
+                }
+            ]
+		},
+        {
+			"name": "Rzym",
+            "links": [
+                {
+                    "port": 1,
+                    "linkId": 5
+                }
+            ]
+		},
+		{
+			"name": "Zagrzeb",
+            "links": [
+                {
+                    "port": 1,
+                    "linkId": 6
+                }
+            ]
+		},
+        {
+			"name": "Ateny",
+            "links": [
+                {
+                    "port": 1,
+                    "linkId": 7
+                }
+            ]
+		},
+		{
+			"name": "Berlin",
+            "links": [
+                {
+                    "port": 1,
+                    "linkId": 8
+                }
+            ]
+		},
+		{
+			"name": "Praga",
+            "links": [
+                {
+                    "port": 1,
+                    "linkId": 9
+                }
+            ]
+		},
+		{
+			"name": "Warszawa",
+            "links": [
+                {
+                    "port": 1,
+                    "linkId": 10
+                }
+            ]
+		}
+    ],
+    "switches": [
+        {
+            "name": "s1",
+            "deviceId": "0000000000000001",
+            "links": [
+                {
+                    "port": 1,
+                    "linkId": 1
+                },
+                {
+                    "port": 2,
+                    "linkId": 11
+                }
+            ]
+        },
+        {
+            "name": "s2",
+            "deviceId": "0000000000000002",
+            "links": [
+                {
+                    "port": 1,
+                    "linkId": 2
+                },
+                {
+                    "port": 2,
+                    "linkId": 11
+                },
+                {
+                    "port": 3,
+                    "linkId": 12
+                },
+                {
+                    "port": 4,
+                    "linkId": 13
+                },
+                {
+                    "port": 5,
+                    "linkId": 14
+                }
+
+
+            ]
+        },
+        {
+            "name": "s3",
+            "deviceId": "0000000000000003",
+            "links": [
+                {
+                    "port": 1,
+                    "linkId": 3
+                },
+                {
+                    "port": 2,
+                    "linkId": 12
+                },
+                {
+                    "port": 3,
+                    "linkId": 23
+                },
+                {
+                    "port": 4,
+                    "linkId": 25
+                }
+            ]
+        },
+        {
+            "name": "s4",
+            "deviceId": "0000000000000004",
+            "links": [
+                {
+                    "port": 1,
+                    "linkId": 4
+                },
+                {
+                    "port": 2,
+                    "linkId": 13
+                },
+                {
+                    "port": 3,
+                    "linkId": 15
+                },
+                {
+                    "port": 4,
+                    "linkId": 16
+                },
+                {
+                    "port": 5,
+                    "linkId": 20
+                },
+                {
+                    "port": 6,
+                    "linkId": 23
+                }
+            ]
+        },
+        {
+            "name": "s5",
+            "deviceId": "0000000000000005",
+            "links": [
+                {
+                    "port": 1,
+                    "linkId": 5
+                },
+                {
+                    "port": 2,
+                    "linkId": 15
+                },
+                {
+                    "port": 3,
+                    "linkId": 24
+                },
+                {
+                    "port": 4,
+                    "linkId": 25
+                }
+            ]
+        },
+        {
+            "name": "s6",
+            "deviceId": "0000000000000006",
+            "links": [
+                {
+                    "port": 1,
+                    "linkId": 6
+                },
+                {
+                    "port": 2,
+                    "linkId": 16
+                },
+                {
+                    "port": 3,
+                    "linkId": 17
+                },
+                {
+                    "port": 4,
+                    "linkId": 22
+                }
+            ]
+        },
+        {
+            "name": "s7",
+            "deviceId": "0000000000000007",
+            "links": [
+                {
+                    "port": 1,
+                    "linkId": 7
+                },
+                {
+                    "port": 2,
+                    "linkId": 17
+                },
+                {
+                    "port": 3,
+                    "linkId": 24
+                }
+            ]
+        },
+        {
+            "name": "s8",
+            "deviceId": "0000000000000008",
+            "links": [
+                {
+                    "port": 1,
+                    "linkId": 8
+                },
+                {
+                    "port": 2,
+                    "linkId": 14
+                },
+                {
+                    "port": 3,
+                    "linkId": 18
+                },
+                {
+                    "port": 4,
+                    "linkId": 19
+                }
+            ]
+        },
+        {
+            "name": "s9",
+            "deviceId": "0000000000000009",
+            "links": [
+                {
+                    "port": 1,
+                    "linkId": 9
+                },
+                {
+                    "port": 2,
+                    "linkId": 18
+                },
+                {
+                    "port": 3,
+                    "linkId": 20
+                },
+                {
+                    "port": 4,
+                    "linkId": 21
+                },
+                {
+                    "port": 5,
+                    "linkId": 22
+                }
+            ]
+        },
+        {
+            "name": "s10",
+            "deviceId": "000000000000000a",
+            "links": [
+                {
+                    "port": 1,
+                    "linkId": 8
+                },
+                {
+                    "port": 2,
+                    "linkId": 19
+                },
+                {
+                    "port": 3,
+                    "linkId": 21
+                }
+            ]
+        }
+    ],
+    "links": [
+        {
+            "id": 1,
+			"node1": "Londyn",
+            "node2": "s1",
+            "delay": 0,
+            "bw": 1000
+		},
+		{
+            "id": 2,
+			"node1": "Paryz",
+            "node2": "s2",
+            "delay": 0,
+            "bw": 1000
+		},
+        {
+            "id": 3,
+			"node1": "Madryt",
+            "node2": "s3",
+            "delay": 0,
+            "bw": 1000
+		},
+		{
+            "id": 4,
+			"node1": "Zurych",
+            "node2": "s4",
+            "delay": 0,
+            "bw": 1000
+		},
+        {
+            "id": 5,
+			"node1": "Rzym",
+            "node2": "s5",
+            "delay": 0,
+            "bw": 1000
+		},
+		{
+            "id": 6,
+			"node1": "Zagrzeb",
+            "node2": "s6",
+            "delay": 0,
+            "bw": 1000
+		},
+        {
+            "id": 7,
+			"node1": "Ateny",
+            "node2": "s7",
+            "delay": 0,
+            "bw": 1000
+		},
+		{
+            "id": 8,
+			"node1": "Berlin",
+            "node2": "s8",
+            "delay": 0,
+            "bw": 1000
+		},
+		{
+            "id": 9,
+			"node1": "Praga",
+            "node2": "s9",
+            "delay": 0,
+            "bw": 1000
+		},
+		{
+            "id": 10,
+			"node1": "Warszawa",
+            "node2": "s10",
+            "delay": 0,
+            "bw": 1000
+		},
+        {
+            "id": 11,
+            "node1": "s1",
+            "node2": "s2",
+            "delay": 2,
+            "bw": 80
+        },
+        {
+            "id": 12,
+            "node1": "s3",
+            "node2": "s2",
+            "delay": 7,
+            "bw": 80
+        },
+        {
+            "id": 13,
+            "node1": "s4",
+            "node2": "s2",
+            "delay": 3,
+            "bw": 80
+        },
+        {
+            "id": 14,
+            "node1": "s8",
+            "node2": "s2",
+            "delay": 6,
+            "bw": 80
+        },
+        {
+            "id": 15,
+            "node1": "s4",
+            "node2": "s5",
+            "delay": 5,
+            "bw": 80
+        },
+        {
+            "id": 16,
+            "node1": "s4",
+            "node2": "s6",
+            "delay": 4,
+            "bw": 80
+        },
+        {
+            "id": 17,
+            "node1": "s6",
+            "node2": "s7",
+            "delay": 8,
+            "bw": 80
+        },
+        {
+            "id": 18,
+            "node1": "s8",
+            "node2": "s9",
+            "delay": 2,
+            "bw": 80
+        },
+        {
+            "id": 19,
+            "node1": "s8",
+            "node2": "s10",
+            "delay": 2,
+            "bw": 80
+        },
+
+
+
+        {
+            "id": 20,
+            "node1": "s4",
+            "node2": "s9",
+            "delay": 3,
+            "bw": 80
+        },
+        {
+            "id": 21,
+            "node1": "s10",
+            "node2": "s9",
+            "delay": 4,
+            "bw": 80
+        },
+        {
+            "id": 22,
+            "node1": "s6",
+            "node2": "s9",
+            "delay": 3,
+            "bw": 80
+        },
+        {
+            "id": 23,
+            "node1": "s3",
+            "node2": "s4",
+            "delay": 9,
+            "bw": 80
+        },
+        {
+            "id": 24,
+            "node1": "s5",
+            "node2": "s7",
+            "delay": 8,
+            "bw": 80
+        },
+        {
+            "id": 25,
+            "node1": "s3",
+            "node2": "s5",
+            "delay": 9,
+            "bw": 80
+        }
+    ]
+
+}

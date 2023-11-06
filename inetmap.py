@@ -1,5 +1,7 @@
 from mininet.topo import Topo
 from mininet.node import OVSKernelSwitch
+import mininet
+
 
 class Project( Topo ):
     def __init__( self ):
@@ -16,7 +18,6 @@ class Project( Topo ):
         h8 = self.addHost('Berlin')
         h9 = self.addHost('Praga')
         h10 = self.addHost('Warszawa')
-
 
         s1 = self.addSwitch('s1')
         s2 = self.addSwitch('s2')
@@ -52,10 +53,13 @@ class Project( Topo ):
 
 
 #       cyclic links also
-        self.addLink(s4,s9,delay='5ms', bw=50)
+        self.addLink(s4,s9,delay='3ms', bw=80)
         self.addLink(s9,s10,delay='4ms', bw=80)
-        self.addLink(s6,s9,delay='8ms', bw=400)
-        self.addLink(s3,s4,delay='2ms', bw=100)
-        self.addLink(s5,s7,delay='4ms', bw=80)
+        self.addLink(s6,s9,delay='3ms', bw=80)
+        self.addLink(s3,s4,delay='9ms', bw=80)
+        self.addLink(s5,s7,delay='8ms', bw=80)
+        self.addLink(s3,s5,delay='9ms', bw=80)
+
+
 
 topos = { 'inetmap': ( lambda: Project() )}

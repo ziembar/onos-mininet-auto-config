@@ -10,14 +10,26 @@ auth_string = f"{username}:{password}"
 base64_auth_string = base64.b64encode(auth_string.encode()).decode()
 
 # Adres URL serwera ONOS
-url = "http://192.168.56.104:8181/onos/v1/links"
+urlLinks = "http://192.168.56.104:8181/onos/v1/links"
+urlDevices = "http://192.168.56.104:8181/onos/v1/devices"
 
 # Tworzenie obiektu Request i dodawanie nagłówka Authorization
-request = urllib.request.Request(url)
-request.add_header("Authorization", f"Basic {base64_auth_string}")
+def getLinks():
+    request = urllib.request.Request(urlLinks)
+    request.add_header("Authorization", f"Basic {base64_auth_string}")
 
-# Wysyłanie zapytania GET
-response = urllib.request.urlopen(request)
-content = response.read()
+    # Wysyłanie zapytania GET
+    response = urllib.request.urlopen(request)
+    content = response.read()
 
-print(content)
+    return content
+
+def getDevices():
+    request = urllib.request.Request(urlDevices)
+    request.add_header("Authorization", f"Basic {base64_auth_string}")
+
+    # Wysyłanie zapytania GET
+    response = urllib.request.urlopen(request)
+    content = response.read()
+
+    return content
