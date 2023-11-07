@@ -1,6 +1,7 @@
 import re
 import networkx as nx
 import json
+import flow_rule_template as frt
 
 delay_constant_tcp = 20
 bw_constant_tcp = 1/20
@@ -61,11 +62,13 @@ def calculate_tcp_score(delay,current_bw,active_tcp,active_udp):
         bw_factor = (-1)*(current_bw/active_tcp)*bw_constant_tcp
     score = 50 + delay_factor+bw_factor
     return score
+
 def calculate_udp_score(delay,current_bw,active_tcp,active_udp):
     delay_factor = delay*delay_constant_udp
     bw_factor = (-1)*current_bw*bw_constant_udp
     score = 100 + delay_factor+bw_factor
     return score
+
 def calculate_paths(source_node, destination_node):
     """Calculates all paths between source and destination node.
     -------
@@ -143,3 +146,51 @@ def fit_into_requirements(user_request):
         if data['bw'] >= user_request.get_bw() and data['delay'] < user_request.get_delay() and data["current_bw"] > 0:
             subgraph.add_edge(u, v, **data)
     return subgraph
+
+def create_flow_rules(path, user_request):
+    """Creates flow rules for a given path.
+    -------
+    Parameters:
+    path: list of strings (path between source and destination node)
+    user_request: connection_request object
+    -------
+    Returns:
+    flow_rules: list of strings (flow rules in JSON format)
+    """
+    flow_rules = []
+    srcIp = find_device_by_name(path[0])['ip']
+    dstIp = find_device_by_name(path[-1])['ip']
+
+    for i in range(1, len(path) - 2):
+        node = find_device_by_name(path[i])
+        frontNode = find_device_by_name(path[i + 1])
+        backNode = find_device_by_name(path[i - 1])
+
+        backLink = G.get_edge_data(path[i], path[i+1])
+        frontLink = G.get_edge_data(path[i], path[i-1])
+
+        nodeFrontPort = 0
+        nodeBackPort = 0
+        
+        for link in node['links']:
+            if nodeFrontPort == 0:
+                for frontLink in frontNode['links']:
+                    if link['linkId'] == frontLink['linkId']:
+                        nodeFrontPort = link['port']
+                        break
+            if nodeBackPort == 0:
+                for backLink in backNode['links']:
+                    if link['linkId'] == backLink['linkId']:
+                        nodeBackPort = link['port']
+                        break
+            if nodeFrontPort != 0 and nodeBackPort != 0:
+                break
+
+
+        flow_rule_front = frt.create_flow_rule(node['deviceId'], nodeFrontPort, srcIp, dstIp)
+        flow_rule_back = frt.create_flow_rule(node['deviceId'], nodeBackPort, dstIp, srcIp)
+
+
+        flow_rules.append(flow_rule_front)
+        flow_rules.append(flow_rule_back)
+    return flow_rules

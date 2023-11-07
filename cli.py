@@ -1,6 +1,5 @@
 import utils
 from connection_request import connection_request
-#TODO: odzyskiwanie portu z deviceId
 
 user_request = connection_request(1,"A","B","TCP",30,9)
 user_request_UDP = connection_request(1,"A","B","UDP",40,9)
@@ -17,5 +16,7 @@ print(forth)
 fifth =  utils.find_best_path("Ateny","Madryt",user_request_UDP)
 print(fifth)
 
-subgraph = utils.fit_into_requirements(user_request)
-print(subgraph)
+# subgraph = utils.fit_into_requirements(user_request)
+# print(subgraph)
+
+print(utils.create_flow_rules(best_path[0], user_request)[1])
