@@ -56,15 +56,15 @@ def calculate_tcp_score(delay,current_bw,active_tcp,active_udp):
     """
     delay_factor = delay*delay_constant_tcp
     if(active_tcp==0):
-        bw_factor = -1*current_bw*bw_constant_tcp
+        bw_factor = (-1)*current_bw*bw_constant_tcp
     else:
-        bw_factor = -1*(current_bw/active_tcp)*bw_constant_tcp
+        bw_factor = (-1)*(current_bw/active_tcp)*bw_constant_tcp
     score = 50 + delay_factor+bw_factor
     return score
 def calculate_udp_score(delay,current_bw,active_tcp,active_udp):
     delay_factor = delay*delay_constant_udp
-    bw_factor = -1*current_bw*bw_constant_udp
-    score = 50 + delay_factor+bw_factor
+    bw_factor = (-1)*current_bw*bw_constant_udp
+    score = 100 + delay_factor+bw_factor
     return score
 def calculate_paths(source_node, destination_node):
     """Calculates all paths between source and destination node.
@@ -103,6 +103,7 @@ def find_best_path(source_node, destination_node,user_request):
             try:
                 path = nx.shortest_path(subgraph, source=source_node, target=destination_node, weight="tcp_score", method="dijkstra")
                 length = nx.shortest_path_length(subgraph, source=source_node, target=destination_node, weight="tcp_score", method="dijkstra")
+                update_score(path, user_request)
                 return path, length
             except nx.NetworkXNoPath:
                 return None, float("inf")
@@ -110,6 +111,7 @@ def find_best_path(source_node, destination_node,user_request):
             try:
                 path = nx.shortest_path(subgraph, source=source_node, target=destination_node, weight="udp_score",method="dijkstra")
                 length = nx.shortest_path_length(subgraph, source=source_node, target=destination_node, weight="udp_score", method="dijkstra")
+                update_score(path, user_request)
                 return path, length
             except nx.NetworkXNoPath:
                 return None, float("inf")
@@ -126,7 +128,7 @@ def update_score(nodes,user_request):
             G[u][v]['tcp_score'] = new_tcp_score
             G[u][v]['udp_score'] = new_udp_score
 
-        elif(user_request.get_type=="UDP"):
+        elif(user_request.get_type()=='UDP'):
             new_tcp_score = calculate_tcp_score(data['delay'], data['bw'] - user_request.get_bw(),data['active_tcp'],data['active_udp']+1)
             new_udp_score = calculate_udp_score(data['delay'], data['bw'] - user_request.get_bw(),data['active_tcp'],data['active_udp']+1)
             G[u][v]['current_bw'] = data['bw'] -user_request.get_bw()
@@ -138,6 +140,6 @@ def fit_into_requirements(user_request):
 
     #To na lambdy pozniej
     for u, v, data in G.edges(data=True):
-        if data['bw'] >= user_request.get_bw() and data['delay'] < user_request.get_delay():
+        if data['bw'] >= user_request.get_bw() and data['delay'] < user_request.get_delay() and data["current_bw"] > 0:
             subgraph.add_edge(u, v, **data)
     return subgraph
