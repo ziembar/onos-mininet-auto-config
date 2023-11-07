@@ -1,14 +1,12 @@
 import utils
+from connection_request import connection_request
+
+user_request = connection_request(1,"A","B","TCP",80,10)
 net, G =  utils.bootstrap()
 
-best_path = utils.calculate_paths("Ateny", "Madryt")[0][0]
-
-
-for node in best_path:
-    full_node = utils.find_device_by_name(node)
-    print(f"name:  {full_node['name']}")
-    if 'deviceId' in full_node:
-        print(f"deviceId:  {full_node['deviceId']}")
-    else: 
-        print("deviceId: none")
-
+best_path = utils.find_best_path("Ateny","Madryt","TCP")
+print(best_path)
+utils.update_score(best_path[0],user_request)
+second = utils.find_best_path("Ateny","Madryt","TCP")
+print(second)
+#TODO: odzyskiwanie portu z deviceId
