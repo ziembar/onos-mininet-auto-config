@@ -25,8 +25,6 @@ def find_device_by_name(name):
     for device in net['devices']:
         if device['name'] == name:
             return device
-        
-
 def bootstrap():
     """Reads the inetmap.json file and creates a networkx graph.
     -------
@@ -49,7 +47,6 @@ def bootstrap():
 
     return net,G
 #TODO: add Packet Loss
-
 def calculate_tcp_score(delay,current_bw,active_tcp,active_udp):
     """
     assuming that:
@@ -98,23 +95,25 @@ def calculate_paths(source_node, destination_node):
         sorted_paths.append((path, path_length, path_bw))
     sorted_paths = sorted(sorted_paths, key=lambda rekord: rekord[1])
     return sorted_paths
-def find_best_path(source_node, destination_node,conection_type):
-    if(conection_type=="TCP"):
-        try:
-            path = nx.shortest_path(G, source=source_node, target=destination_node, weight="tcp_score", method="dijkstra")
-            length = nx.shortest_path_length(G, source=source_node, target=destination_node, weight="tcp_score", method="dijkstra")
-            return path, length
-        except nx.NetworkXNoPath:
-            return None, float("inf")
-    else:
-        try:
-            path = nx.shortest_path(G, source=source_node, target=destination_node, weight="udp_score",method="dijkstra")
-            length = nx.shortest_path_length(G, source=source_node, target=destination_node, weight="udp_score", method="dijkstra")
-            return path, length
-        except nx.NetworkXNoPath:
-            return None, float("inf")
+#TODO: handle no path in subgrapg so we can give user another path that does not fit requirements
+def find_best_path(source_node, destination_node,user_request):
+    subgraph = fit_into_requirements(user_request)
+    if(len(subgraph.edges)!=0):
+        if(user_request.get_type()=="TCP"):
+            try:
+                path = nx.shortest_path(subgraph, source=source_node, target=destination_node, weight="tcp_score", method="dijkstra")
+                length = nx.shortest_path_length(subgraph, source=source_node, target=destination_node, weight="tcp_score", method="dijkstra")
+                return path, length
+            except nx.NetworkXNoPath:
+                return None, float("inf")
+        elif(user_request.get_type()=="UDP"):
+            try:
+                path = nx.shortest_path(subgraph, source=source_node, target=destination_node, weight="udp_score",method="dijkstra")
+                length = nx.shortest_path_length(subgraph, source=source_node, target=destination_node, weight="udp_score", method="dijkstra")
+                return path, length
+            except nx.NetworkXNoPath:
+                return None, float("inf")
 def update_score(nodes,user_request):
-    edges = []
     for i in range(len(nodes) - 1):
         u = nodes[i]
         v = nodes[i + 1]
@@ -122,16 +121,23 @@ def update_score(nodes,user_request):
         if(user_request.get_type()=='TCP'):
             new_tcp_score = calculate_tcp_score(data['delay'], data['bw'] - user_request.get_bw(),data['active_tcp']+1,data['active_udp'])
             new_udp_score = calculate_udp_score(data['delay'], data['bw'] - user_request.get_bw(),data['active_tcp']+1,data['active_udp'])
-            G[u][v]['current_bw'] = data['bw'] -user_request.bw
+            G[u][v]['current_bw'] = data['bw'] -user_request.get_bw()
             G[u][v]['active_tcp'] = data['active_tcp']+1
             G[u][v]['tcp_score'] = new_tcp_score
             G[u][v]['udp_score'] = new_udp_score
 
         elif(user_request.get_type=="UDP"):
-            new_tcp_score = calculate_tcp_score(data['delay'], data['bw'] - user_request.get_bw,data['active_tcp'],data['active_udp']+1)
-            new_udp_score = calculate_udp_score(data['delay'], data['bw'] - user_request.get_bw,data['active_tcp'],data['active_udp']+1)
-            G[u][v]['current_bw'] = data['bw'] -user_request.bw
+            new_tcp_score = calculate_tcp_score(data['delay'], data['bw'] - user_request.get_bw(),data['active_tcp'],data['active_udp']+1)
+            new_udp_score = calculate_udp_score(data['delay'], data['bw'] - user_request.get_bw(),data['active_tcp'],data['active_udp']+1)
+            G[u][v]['current_bw'] = data['bw'] -user_request.get_bw()
             G[u][v]['active_udp'] =data['active_udp']+1
             G[u][v]['tcp_score'] = new_tcp_score
             G[u][v]['udp_score'] = new_udp_score
+def fit_into_requirements(user_request):
+    subgraph = nx.Graph()
 
+    #To na lambdy pozniej
+    for u, v, data in G.edges(data=True):
+        if data['bw'] >= user_request.get_bw() and data['delay'] < user_request.get_delay():
+            subgraph.add_edge(u, v, **data)
+    return subgraph

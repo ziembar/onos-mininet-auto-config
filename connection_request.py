@@ -14,3 +14,5 @@ class connection_request:
 
     def get_type(self):
         return self.connection_type
+    def get_delay(self):
+        return self.delay
