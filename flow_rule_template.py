@@ -20,11 +20,11 @@ def create_flow_rule(deviceId, outPort, sourceIp, destinationId):
             },
             {
                 "type": "IPV4_SRC",
-                "ip": "{sourceIp}/32".format(sourceIp)
+                "ip": "{}/32".format(sourceIp)
             },
             {
                 "type": "IPV4_DST",
-                "ip": "{destinationIp}/32".format(destinationId)
+                "ip": "{}/32".format(destinationId)
             }
             ]
         }
