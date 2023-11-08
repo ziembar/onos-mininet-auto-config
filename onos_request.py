@@ -9,6 +9,7 @@ def setSwitch(flow_json, deviceId):
     flow_json = json.dumps(flow_json).encode('utf-8')
 
     url = "http://localhost:8181/onos/v1/flows/of:{deviceId}".format(deviceId = deviceId)
+    print(url)
 
     myRequest = request.Request(url, data=flow_json, headers={"Content-Type": "application/json", "Accept": "application/json"})
     base64string = base64.b64encode(('%s:%s' % (username, password)).encode('utf-8')).decode('utf-8')

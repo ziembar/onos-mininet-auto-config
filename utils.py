@@ -192,7 +192,7 @@ def create_and_send_flow_rules(path, user_request):
     srcIp = find_device_by_name(path[0])['ip']
     dstIp = find_device_by_name(path[-1])['ip']
 
-    for i in range(1, len(path) - 2):
+    for i in range(1, len(path) -1):
         node = find_device_by_name(path[i])
         frontNode = find_device_by_name(path[i + 1])
         backNode = find_device_by_name(path[i - 1])
