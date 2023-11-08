@@ -19,4 +19,4 @@ print(fifth)
 # subgraph = utils.fit_into_requirements(user_request)
 # print(subgraph)
 
-print(utils.create_flow_rules(best_path[0], user_request)[1])
+utils.create_and_send_flow_rules(best_path[0], user_request)

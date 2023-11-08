@@ -2,6 +2,7 @@ import re
 import networkx as nx
 import json
 import flow_rule_template as frt
+import onos_request as request
 
 delay_constant_tcp = 20
 bw_constant_tcp = 1/20
@@ -147,8 +148,8 @@ def fit_into_requirements(user_request):
             subgraph.add_edge(u, v, **data)
     return subgraph
 
-def create_flow_rules(path, user_request):
-    """Creates flow rules for a given path.
+def create_and_send_flow_rules(path, user_request):
+    """Creates and sends to localhost onos controller flow rules for a given path.
     -------
     Parameters:
     path: list of strings (path between source and destination node)
@@ -193,4 +194,8 @@ def create_flow_rules(path, user_request):
 
         flow_rules.append(flow_rule_front)
         flow_rules.append(flow_rule_back)
+
+        request.setSwitch(flow_rule_front, node['deviceId'])
+        request.setSwitch(flow_rule_back, node['deviceId'])
+
     return flow_rules
