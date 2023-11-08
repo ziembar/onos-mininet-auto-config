@@ -1,7 +1,7 @@
 import utils
 from connection_request import connection_request
 
-user_request = connection_request(1,"A","B","TCP",30,9)
+user_request = connection_request(1,"A","B","TCP",30,10)
 user_request_UDP = connection_request(1,"A","B","UDP",40,9)
 net, G =  utils.bootstrap()
 
