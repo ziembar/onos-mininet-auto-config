@@ -102,23 +102,53 @@ def calculate_paths(source_node, destination_node):
 #TODO: handle no path in subgrapg so we can give user another path that does not fit requirements
 def find_best_path(source_node, destination_node,user_request):
     subgraph = fit_into_requirements(user_request)
-    if(len(subgraph.edges)!=0):
-        if(user_request.get_type()=="TCP"):
-            try:
-                path = nx.shortest_path(subgraph, source=source_node, target=destination_node, weight="tcp_score", method="dijkstra")
-                length = nx.shortest_path_length(subgraph, source=source_node, target=destination_node, weight="tcp_score", method="dijkstra")
-                update_score(path, user_request)
-                return path, length
-            except nx.NetworkXNoPath:
-                return None, float("inf")
-        elif(user_request.get_type()=="UDP"):
-            try:
-                path = nx.shortest_path(subgraph, source=source_node, target=destination_node, weight="udp_score",method="dijkstra")
-                length = nx.shortest_path_length(subgraph, source=source_node, target=destination_node, weight="udp_score", method="dijkstra")
-                update_score(path, user_request)
-                return path, length
-            except nx.NetworkXNoPath:
-                return None, float("inf")
+    path = best_path_helper(source_node,destination_node,user_request,subgraph)
+    if(path[0]==None):
+        print("Nie jestesmy w stanine znalezc zadnej sciezki spelniajacej twoje wymagania")
+        path = best_path_helper(source_node,destination_node,user_request,G)
+        exceeded_bw, exceeded_delay = find_narrow_throat(path[0],user_request)
+
+    return path
+
+def best_path_helper(source_node, destination_node,user_request,subgraph):
+    if (user_request.get_type() == "TCP"):
+        try:
+            path = nx.shortest_path(subgraph, source=source_node, target=destination_node, weight="tcp_score",
+                                    method="dijkstra")
+            length = nx.shortest_path_length(subgraph, source=source_node, target=destination_node, weight="tcp_score",
+                                             method="dijkstra")
+            update_score(path, user_request)
+            return path, length
+        except nx.NetworkXNoPath:
+            return None, float("inf")
+    elif (user_request.get_type() == "UDP"):
+        try:
+            path = nx.shortest_path(subgraph, source=source_node, target=destination_node, weight="udp_score",
+                                    method="dijkstra")
+            length = nx.shortest_path_length(subgraph, source=source_node, target=destination_node, weight="udp_score",
+                                             method="dijkstra")
+            update_score(path, user_request)
+            return path, length
+        except nx.NetworkXNoPath:
+            return None, float("inf")
+def find_narrow_throat(path,user_request):
+    print(path)
+    exceeded_delay=[]
+    exceeded_bw=[]
+
+    for i in range(1,len(path) - 2):
+        u = path[i]
+        v = path[i + 1]
+        edge = G.get_edge_data(u,v)
+        if(edge['delay']>=user_request.get_delay()):
+            exceeded_delay.append(edge)
+        if(edge['current_bw']<=user_request.get_bw()):
+            exceeded_bw.append(edge)
+
+    print(exceeded_bw)
+    print(exceeded_delay)
+
+    return exceeded_bw,exceeded_delay
 def update_score(nodes,user_request):
     for i in range(len(nodes) - 1):
         u = nodes[i]
@@ -144,7 +174,7 @@ def fit_into_requirements(user_request):
 
     #To na lambdy pozniej
     for u, v, data in G.edges(data=True):
-        if data['bw'] >= user_request.get_bw() and data['delay'] < user_request.get_delay() and data["current_bw"] > 0:
+        if data['current_bw'] >= user_request.get_bw() and data['delay'] < user_request.get_delay():
             subgraph.add_edge(u, v, **data)
     return subgraph
 
@@ -166,9 +196,6 @@ def create_and_send_flow_rules(path, user_request):
         node = find_device_by_name(path[i])
         frontNode = find_device_by_name(path[i + 1])
         backNode = find_device_by_name(path[i - 1])
-
-        backLink = G.get_edge_data(path[i], path[i+1])
-        frontLink = G.get_edge_data(path[i], path[i-1])
 
         nodeFrontPort = 0
         nodeBackPort = 0
