@@ -1,4 +1,5 @@
 import urllib.request as request
+import urllib.error as request_error
 import base64
 import json
 
@@ -21,5 +22,5 @@ def setSwitch(flow_json, deviceId):
             print("Request successful")
         else:
             print(f"Request failed with status code {response.getcode()}")
-    except Exception as e:
+    except request_error.HTTPError as e:
         print(f"Request failed with {e}")
