@@ -8,16 +8,17 @@ password = "rocks"
 
 def setSwitch(flow_json, deviceId):
     flow_json = json.dumps(flow_json).encode('utf-8')
+    print(flow_json)
 
     url = "http://localhost:8181/onos/v1/flows/of:{deviceId}".format(deviceId = deviceId)
     print(url)
 
-    myRequest = request.Request(url, data=flow_json, headers={"Content-Type": "application/json", "Accept": "application/json"})
+    myRequest = request.Request(url, headers={"Content-Type": "application/json", "Accept": "application/json"})
     base64string = base64.b64encode(('%s:%s' % (username, password)).encode('utf-8')).decode('utf-8')
     myRequest.add_header("Authorization", "Basic %s" % base64string)
 
     try:
-        response = request.urlopen(myRequest)
+        response = request.urlopen(myRequest, data=flow_json)
         if response.getcode() == 200:
             print("Request successful")
         else:
