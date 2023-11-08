@@ -6,7 +6,6 @@ user_request_UDP = connection_request(1,"A","B","UDP",40,9)
 net, G =  utils.bootstrap()
 
 best_path = utils.find_best_path("Ateny","Madryt",user_request)
-print(best_path)
 # second = utils.find_best_path("Ateny","Madryt",user_request)
 # print(second)
 # third = utils.find_best_path("Ateny","Madryt",user_request)

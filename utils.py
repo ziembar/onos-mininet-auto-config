@@ -104,7 +104,7 @@ def find_best_path(source_node, destination_node,user_request):
     subgraph = fit_into_requirements(user_request)
     path = best_path_helper(source_node,destination_node,user_request,subgraph)
     if(path[0]==None):
-        print("Nie jestesmy w stanine znalezc zadnej sciezki spelniajacej twoje wymagania")
+        print("[WARN] Nie jestesmy w stanine znalezc zadnej sciezki spelniajacej twoje wymagania")
         path = best_path_helper(source_node,destination_node,user_request,G)
         exceeded_bw, exceeded_delay = find_narrow_throat(path[0],user_request)
 
@@ -185,12 +185,13 @@ def create_and_send_flow_rules(path, user_request):
     path: list of strings (path between source and destination node)
     user_request: connection_request object
     -------
-    Returns:
-    flow_rules: list of strings (flow rules in JSON format)
     """
     flow_rules = []
     srcIp = find_device_by_name(path[0])['ip']
     dstIp = find_device_by_name(path[-1])['ip']
+
+    success = 0
+    error = 0
 
     for i in range(1, len(path) -1):
         node = find_device_by_name(path[i])
@@ -222,7 +223,14 @@ def create_and_send_flow_rules(path, user_request):
         flow_rules.append(flow_rule_front)
         flow_rules.append(flow_rule_back)
 
-        request.setSwitch(flow_rule_front, node['deviceId'])
-        request.setSwitch(flow_rule_back, node['deviceId'])
+        if (request.setSwitch(flow_rule_front, node['deviceId']) == "OK"):
+            success += 1
+        else:
+            error += 1
+        if(request.setSwitch(flow_rule_back, node['deviceId']) == "OK"):
+            success += 1
+        else:
+            error += 1
 
-    return flow_rules
+    if(error==0):
+        return f"[INFO] Successfully added {success} flows to switches, unsuccessfully {error}"

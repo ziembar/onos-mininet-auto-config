@@ -2,7 +2,7 @@ def create_flow_rule(deviceId, outPort, sourceIp, destinationId):
     flow = {
         "priority": 40000,
         "timeout": 1500,
-        "isPermanent": True,
+        "isPermanent": False,
         "deviceId": deviceId,
         "treatment": {
             "instructions": [

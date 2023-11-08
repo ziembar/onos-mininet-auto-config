@@ -1,27 +1,48 @@
-import urllib.request as request
-import urllib.error as request_error
+# import requests
+
+# import base64
+# import json
+
+# username = "onos"
+# password = "rocks"
+
+# def setSwitch(flow_json, deviceId):
+
+#     flow_json = json.dumps(flow_json)
+
+#     url = "http://localhost:8181/onos/v1/flows/of:{}".format(deviceId)
+
+#     headers = {"Content-Type": "application/json", "Accept": "application/json"}
+
+#     response = requests.post(url=url, headers=headers, data=flow_json, auth=('karaf', 'karaf'))
+#     print(response)
+    
+import requests
 import base64
 import json
 
-username = "onos"
-password = "rocks"
+# Dane uwierzytelniające (nazwa użytkownika i hasło)
+username = 'onos'
+password = 'rocks'
 
-def setSwitch(flow_json, deviceId):
-    flow_json = json.dumps(flow_json).encode('utf-8')
-    print(flow_json)
+def setSwitch(flow, deviceId):
+    # Tworzenie kodu base64 z nazwy użytkownika i hasła
+    auth_string = f"{username}:{password}"
+    base64_auth_string = base64.b64encode(auth_string.encode()).decode()
 
-    url = "http://localhost:8181/onos/v1/flows/of:{deviceId}".format(deviceId = deviceId)
-    print(url)
+    # Adres URL serwera ONOS
+    url = f"http://localhost:8181/onos/v1/flows/{deviceId}"
 
-    myRequest = request.Request(url, data=flow_json, headers={"Content-Type": "application/json", "Accept": "application/json"})
-    base64string = base64.b64encode(('%s:%s' % (username, password)).encode('utf-8')).decode('utf-8')
-    myRequest.add_header("Authorization", "Basic %s" % base64string)
+    # Tworzenie obiektu Request i dodawanie nagłówka Authorization
+    headers = {"Authorization": f"Basic {base64_auth_string}",
+               "Content-Type": "application/json",
+               "Accept": "application/json"
+               }
 
-    try:
-        response = request.urlopen(myRequest)
-        if response.getcode() == 200:
-            print("Request successful")
-        else:
-            print(f"Request failed with status code {response.getcode()}")
-    except request_error.HTTPError as e:
-        print(f"Request failed with {e}")
+    response = requests.post(url, json=flow, headers=headers)
+    if response.status_code//100 == 2:
+        return "OK"
+    else:
+        print(f"[ERROR] Request failed with status code {response.status_code}")
+        print("[ERROR] Response:", response.text)
+        return "ERROR"
