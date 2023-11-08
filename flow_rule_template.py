@@ -1,33 +1,33 @@
 def create_flow_rule(deviceId, outPort, sourceIp, destinationId):
-    flow = """{{
+    flow = {
         "priority": 40000,
         "timeout": 1500,
-        "isPermanent": true,
-        "deviceId": "of:{0}",
-        "treatment": {{
+        "isPermanent": True,
+        "deviceId": deviceId,
+        "treatment": {
             "instructions": [
-            {{
+            {
                 "type": "OUTPUT",
-                "port": "{1}"
-            }}
+                "port": outPort
+            }
             ]
-        }},
-        "selector": {{
+        },
+        "selector": {
             "criteria": [
-            {{
+            {
                 "type": "ETH_TYPE",
                 "ethType": "0x0800"
-            }},
-            {{
+            },
+            {
                 "type": "IPV4_SRC",
-                "ip": "{2}/32"
-            }},
-            {{
+                "ip": "{sourceIp}/32".format(sourceIp)
+            },
+            {
                 "type": "IPV4_DST",
-                "ip": "{3}/32"
-            }}
+                "ip": "{destinationIp}/32".format(destinationId)
+            }
             ]
-        }}
-    }}"""
-    return flow.format(deviceId, outPort, sourceIp, destinationId)
+        }
+    }
+    return flow
         
