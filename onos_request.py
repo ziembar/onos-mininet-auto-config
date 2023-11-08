@@ -1,22 +1,3 @@
-# import requests
-
-# import base64
-# import json
-
-# username = "onos"
-# password = "rocks"
-
-# def setSwitch(flow_json, deviceId):
-
-#     flow_json = json.dumps(flow_json)
-
-#     url = "http://localhost:8181/onos/v1/flows/of:{}".format(deviceId)
-
-#     headers = {"Content-Type": "application/json", "Accept": "application/json"}
-
-#     response = requests.post(url=url, headers=headers, data=flow_json, auth=('karaf', 'karaf'))
-#     print(response)
-    
 import requests
 import base64
 import json
@@ -39,10 +20,14 @@ def setSwitch(flow, deviceId):
                "Accept": "application/json"
                }
 
-    response = requests.post(url, json=flow, headers=headers)
-    if response.status_code//100 == 2:
-        return "OK"
-    else:
-        print(f"[ERROR] Request failed with status code {response.status_code}")
-        print("[ERROR] Response:", response.text)
+    try:
+        response = requests.post(url, json=flow, headers=headers)
+        if response.status_code//100 == 2:
+            return "OK"
+        else:
+            print(f"[ERROR] Request failed with status code {response.status_code}")
+            print("[ERROR] Response:", response.text)
+            return "ERROR"
+    except Exception as e:
+        print("[ERROR] Request failed with exception:", e)
         return "ERROR"
