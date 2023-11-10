@@ -4,8 +4,8 @@ from connection_request import connection_request
 user_request = connection_request(1,"A","B","TCP",1,100)
 user_request2 = connection_request(2,"A","B","TCP",1,100)
 user_request3 = connection_request(3,"A","B","TCP",1,100)
-user_request_UDP = connection_request(1,"A","B","UDP",40,16)
-user_request_UDP2 = connection_request(2,"A","B","UDP",80,90)
+user_request_UDP = connection_request(1,"A","B","UDP",40,160)
+user_request_UDP2 = connection_request(2,"A","B","UDP",51,118)
 
 net, G =  utils.bootstrap()
 

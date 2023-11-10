@@ -104,9 +104,13 @@ def calculate_paths(source_node, destination_node):
 #TODO: handle no path in subgrapg so we can give user another path that does not fit requirements
 def find_best_path(source_node, destination_node,user_request):
     subgraph = fit_into_requirements(user_request)
+
     path = best_path_helper(source_node, destination_node, user_request, subgraph)
+
     #exceeded_bw, exceeded_delay = find_narrow_throat(path[0], user_request)
     delay_sum = calculate_delay(path[0])
+    print(delay_sum)
+
 
     if (path[0] == None or delay_sum > user_request.get_delay()):
         print("Nie jestesmy w stanine znalezc zadnej sciezki spelniajacej twoje wymagania")
@@ -142,7 +146,6 @@ def best_path_helper(source_node, destination_node, user_request, subgraph):
                                     method="dijkstra")
             length = nx.shortest_path_length(subgraph, source=source_node, target=destination_node, weight="udp_score",
                                              method="dijkstra")
-            update_score(path, user_request)
             return path, length
         except nx.NetworkXNoPath:
             return None, float("inf")
