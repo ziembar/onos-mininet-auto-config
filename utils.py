@@ -45,7 +45,9 @@ def bootstrap():
 
         delay = link['delay']
         bw = link['bw']
-        G.add_edge(node1, node2 ,delay = delay, bw = bw,current_bw=bw,active_tcp=0,active_udp=0, tcp_score=calculate_tcp_score(delay,bw,0,0),udp_score=calculate_udp_score(delay,bw,0,0))
+        G.add_edge(node1, node2, delay=delay, bw=bw, current_bw=bw, active_tcp=0, active_udp=0,
+                   tcp_score=calculate_tcp_score(delay, bw, 0, 0),
+                   udp_score=calculate_udp_score(delay, bw, 0, 0))
 
     return net,G
 #TODO: add Packet Loss
@@ -102,22 +104,35 @@ def calculate_paths(source_node, destination_node):
 #TODO: handle no path in subgrapg so we can give user another path that does not fit requirements
 def find_best_path(source_node, destination_node,user_request):
     subgraph = fit_into_requirements(user_request)
-    path = best_path_helper(source_node,destination_node,user_request,subgraph)
-    if(path[0]==None):
-        print("[WARN] Nie jestesmy w stanine znalezc zadnej sciezki spelniajacej twoje wymagania")
-        path = best_path_helper(source_node,destination_node,user_request,G)
-        exceeded_bw, exceeded_delay = find_narrow_throat(path[0],user_request)
+    path = best_path_helper(source_node, destination_node, user_request, subgraph)
+    #exceeded_bw, exceeded_delay = find_narrow_throat(path[0], user_request)
+    delay_sum = calculate_delay(path[0])
+
+    if (path[0] == None or delay_sum > user_request.get_delay()):
+        print("Nie jestesmy w stanine znalezc zadnej sciezki spelniajacej twoje wymagania")
+        path = best_path_helper(source_node, destination_node, user_request, G)
+        exceeded_bw, exceeded_delay = find_narrow_throat(path[0], user_request)
+        print("Możemy zrealizować połączenie, jesli te warunki ci opowiadaja,"
+            " suma opoznien ", exceeded_delay, " minimalna  przepustowosc ", exceeded_bw)
+
+    update_score(path[0], user_request)
 
     return path
-
-def best_path_helper(source_node, destination_node,user_request,subgraph):
+def calculate_delay(path):
+    delay_sum = 0
+    for i in range(len(path) - 1):
+        u = path[i]
+        v = path[i + 1]
+        data = G.get_edge_data(u, v)
+        delay_sum = delay_sum + data['delay']
+    return delay_sum
+def best_path_helper(source_node, destination_node, user_request, subgraph):
     if (user_request.get_type() == "TCP"):
         try:
-            path = nx.shortest_path(subgraph, source=source_node, target=destination_node, weight="tcp_score",
-                                    method="dijkstra")
-            length = nx.shortest_path_length(subgraph, source=source_node, target=destination_node, weight="tcp_score",
-                                             method="dijkstra")
-            update_score(path, user_request)
+            path = nx.shortest_path(subgraph, source=source_node, target=destination_node,
+                                    weight="tcp_score", method="dijkstra")
+            length = nx.shortest_path_length(subgraph, source=source_node, target=destination_node,
+                                             weight="tcp_score", method="dijkstra")
             return path, length
         except nx.NetworkXNoPath:
             return None, float("inf")
@@ -131,42 +146,46 @@ def best_path_helper(source_node, destination_node,user_request,subgraph):
             return path, length
         except nx.NetworkXNoPath:
             return None, float("inf")
-def find_narrow_throat(path,user_request):
-    print(path)
-    exceeded_delay=[]
-    exceeded_bw=[]
 
-    for i in range(1,len(path) - 2):
+
+def find_narrow_throat(path, user_request):
+    exceeded_delay = 0
+    exceeded_bw = float("inf")
+
+    for i in range(1, len(path) - 2):
         u = path[i]
         v = path[i + 1]
-        edge = G.get_edge_data(u,v)
-        if(edge['delay']>=user_request.get_delay()):
-            exceeded_delay.append(edge)
-        if(edge['current_bw']<=user_request.get_bw()):
-            exceeded_bw.append(edge)
+        edge = G.get_edge_data(u, v)
+        exceeded_delay = exceeded_delay + edge['delay']
+        if (edge['current_bw'] < exceeded_bw):
+            exceeded_bw = edge['current_bw']
+    if (exceeded_delay<=user_request.get_delay()):
+        exceeded_delay = None
+    return exceeded_bw, exceeded_delay
 
-    print(exceeded_bw)
-    print(exceeded_delay)
 
-    return exceeded_bw,exceeded_delay
-def update_score(nodes,user_request):
+def update_score(nodes, user_request):
     for i in range(len(nodes) - 1):
         u = nodes[i]
         v = nodes[i + 1]
-        data = G.get_edge_data(u,v)
-        if(user_request.get_type()=='TCP'):
-            new_tcp_score = calculate_tcp_score(data['delay'], data['bw'] - user_request.get_bw(),data['active_tcp']+1,data['active_udp'])
-            new_udp_score = calculate_udp_score(data['delay'], data['bw'] - user_request.get_bw(),data['active_tcp']+1,data['active_udp'])
-            G[u][v]['current_bw'] = data['bw'] -user_request.get_bw()
-            G[u][v]['active_tcp'] = data['active_tcp']+1
+        data = G.get_edge_data(u, v)
+        if (user_request.get_type() == 'TCP'):
+            new_tcp_score = calculate_tcp_score(data['delay'], data['bw'] - user_request.bw,
+                                                data['active_tcp'] + 1, data['active_udp'])
+            new_udp_score = calculate_udp_score(data['delay'], data['bw'] - user_request.bw,
+                                                data['active_tcp'] + 1, data['active_udp'])
+            G[u][v]['current_bw'] = data['current_bw'] - user_request.bw
+            G[u][v]['active_tcp'] = data['active_tcp'] + 1
             G[u][v]['tcp_score'] = new_tcp_score
             G[u][v]['udp_score'] = new_udp_score
 
-        elif(user_request.get_type()=='UDP'):
-            new_tcp_score = calculate_tcp_score(data['delay'], data['bw'] - user_request.get_bw(),data['active_tcp'],data['active_udp']+1)
-            new_udp_score = calculate_udp_score(data['delay'], data['bw'] - user_request.get_bw(),data['active_tcp'],data['active_udp']+1)
-            G[u][v]['current_bw'] = data['bw'] -user_request.get_bw()
-            G[u][v]['active_udp'] =data['active_udp']+1
+        elif (user_request.get_type() == 'UDP'):
+            new_tcp_score = calculate_tcp_score(data['delay'], data['bw'] - user_request.bw, data['active_tcp'],
+                                                data['active_udp'] + 1)
+            new_udp_score = calculate_udp_score(data['delay'], data['bw'] - user_request.bw, data['active_tcp'],
+                                                data['active_udp'] + 1)
+            G[u][v]['current_bw'] = data['current_bw'] - user_request.bw
+            G[u][v]['active_udp'] = data['active_udp'] + 1
             G[u][v]['tcp_score'] = new_tcp_score
             G[u][v]['udp_score'] = new_udp_score
 def fit_into_requirements(user_request):
@@ -174,7 +193,7 @@ def fit_into_requirements(user_request):
 
     #To na lambdy pozniej
     for u, v, data in G.edges(data=True):
-        if data['current_bw'] >= user_request.get_bw() and data['delay'] < user_request.get_delay():
+        if data['current_bw'] >= user_request.get_bw():
             subgraph.add_edge(u, v, **data)
     return subgraph
 
@@ -185,6 +204,8 @@ def create_and_send_flow_rules(path, user_request):
     path: list of strings (path between source and destination node)
     user_request: connection_request object
     -------
+    Returns:
+    flow_rules: list of strings (flow rules in JSON format)
     """
     flow_rules = []
     srcIp = find_device_by_name(path[0])['ip']
