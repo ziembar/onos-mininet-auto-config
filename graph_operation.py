@@ -5,33 +5,36 @@ bw_constant_tcp = 1/20
 
 delay_constant_udp = 1
 bw_constant_udp = 1/10
-def fit_into_requirements(user_request,G):
+
+def fit_into_requirements(user_request, G):
     subgraph = nx.Graph()
 
     for u, v, data in G.edges(data=True):
-        if data['current_bw'] >= user_request.get_bw():
+        if data['current_bw'] >= user_request.bw:
             subgraph.add_edge(u, v, **data)
     return subgraph
-def best_path_helper(source_node, destination_node, user_request, subgraph):
-    if (user_request.get_type() == "TCP"):
+
+def best_path_helper(user_request, subgraph):
+    if (user_request.type == "TCP"):
         try:
-            path = nx.shortest_path(subgraph, source=source_node, target=destination_node,
+            path = nx.shortest_path(subgraph, source=user_request.source, target=user_request.destination,
                                     weight="tcp_score", method="dijkstra")
-            length = nx.shortest_path_length(subgraph, source=source_node, target=destination_node,
+            length = nx.shortest_path_length(subgraph, source=user_request.source, target=user_request.destination,
                                              weight="tcp_score", method="dijkstra")
             return path, length
         except nx.NetworkXNoPath:
             return None, float("inf")
-    elif (user_request.get_type() == "UDP"):
+    elif (user_request.type == "UDP"):
         try:
-            path = nx.shortest_path(subgraph, source=source_node, target=destination_node, weight="udp_score",
+            path = nx.shortest_path(subgraph, source=user_request.source, target=user_request.destination, weight="udp_score",
                                     method="dijkstra")
-            length = nx.shortest_path_length(subgraph, source=source_node, target=destination_node, weight="udp_score",
+            length = nx.shortest_path_length(subgraph, source=user_request.source, target=user_request.destination, weight="udp_score",
                                              method="dijkstra")
             return path, length
         except nx.NetworkXNoPath:
             return None, float("inf")
-def calculate_delay(path,G):
+
+def calculate_delay(path, G):
     delay_sum = 0
     for i in range(len(path) - 1):
         u = path[i]
@@ -39,12 +42,13 @@ def calculate_delay(path,G):
         data = G.get_edge_data(u, v)
         delay_sum = delay_sum + data['delay']
     return delay_sum
+
 def update_score(nodes, user_request,G):
     for i in range(len(nodes) - 1):
         u = nodes[i]
         v = nodes[i + 1]
         data = G.get_edge_data(u, v)
-        if (user_request.get_type() == 'TCP'):
+        if (user_request.type == 'TCP'):
             new_tcp_score = calculate_tcp_score(data['delay'], data['bw'] - user_request.bw,
                                                 data['active_tcp'] + 1, data['active_udp'])
             new_udp_score = calculate_udp_score(data['delay'], data['bw'] - user_request.bw,
@@ -54,7 +58,7 @@ def update_score(nodes, user_request,G):
             G[u][v]['tcp_score'] = new_tcp_score
             G[u][v]['udp_score'] = new_udp_score
 
-        elif (user_request.get_type() == 'UDP'):
+        elif (user_request.type == 'UDP'):
             new_tcp_score = calculate_tcp_score(data['delay'], data['bw'] - user_request.bw, data['active_tcp'],
                                                 data['active_udp'] + 1)
             new_udp_score = calculate_udp_score(data['delay'], data['bw'] - user_request.bw, data['active_tcp'],
@@ -63,7 +67,8 @@ def update_score(nodes, user_request,G):
             G[u][v]['active_udp'] = data['active_udp'] + 1
             G[u][v]['tcp_score'] = new_tcp_score
             G[u][v]['udp_score'] = new_udp_score
-def calculate_tcp_score(delay,current_bw,active_tcp,active_udp):
+
+def calculate_tcp_score(delay, current_bw, active_tcp, active_udp):
     """
     assuming that:
     -avg BW is around 100
@@ -77,12 +82,14 @@ def calculate_tcp_score(delay,current_bw,active_tcp,active_udp):
         bw_factor = (-1)*(current_bw/active_tcp)*bw_constant_tcp
     score = 50 + delay_factor+bw_factor
     return score
-def calculate_udp_score(delay,current_bw,active_tcp,active_udp):
+
+def calculate_udp_score(delay, current_bw, active_tcp, active_udp):
     delay_factor = delay*delay_constant_udp
     bw_factor = (-1)*current_bw*bw_constant_udp
     score = 100 + delay_factor+bw_factor
     return score
-def find_narrow_throat(path, user_request,G):
+
+def find_narrow_throat(path, G):
     exceeded_delay = 0
     exceeded_bw = float("inf")
 
@@ -94,33 +101,33 @@ def find_narrow_throat(path, user_request,G):
         if (edge['current_bw'] < exceeded_bw):
             exceeded_bw = edge['current_bw']
     return exceeded_bw, exceeded_delay
-def find_best_path(source_node, destination_node,user_request,G):
+
+def find_best_path(user_request,G):
     #Filtr po BW
     subgraph = fit_into_requirements(user_request,G)
 
     #Optymalna sciezka
-    path = best_path_helper(source_node, destination_node, user_request, subgraph)
+    path = best_path_helper(user_request, subgraph)
 
     #Sprawdzanie delay
-    delay_sum = calculate_delay(path[0],G)
+    delay_sum = calculate_delay(path[0], G)
     print(delay_sum)
 
 
-    if (path[0] == None or delay_sum > user_request.get_delay()):
+    if (path[0] == None or delay_sum > user_request.delay):
 
         #Sciezka na calym grafie
-        path_sub_optimal = best_path_helper(source_node, destination_node, user_request, G)
+        path_sub_optimal = best_path_helper(user_request, G)
 
         #Pewnie mozna by to wykorzystac do sortowania w zależności od potrzeb
         #dopa = calculate_paths(source_node,destination_node,G)
-        exceeded_bw, exceeded_delay = find_narrow_throat(path_sub_optimal[0], user_request,G)
+        exceeded_bw, exceeded_delay = find_narrow_throat(path_sub_optimal[0], G)
 
-        if (path_sub_optimal[0] == None or exceeded_delay > user_request.get_delay() or exceeded_bw<user_request.get_bw()):
-            print("Nie jestesmy w stanine znalezc zadnej sciezki spelniajacej twoje wymagania")
+        if (path_sub_optimal[0] == None or exceeded_delay > user_request.delay or exceeded_bw<user_request.bw):
+            print("Nie jestesmy w stanine znalezc zadnej sciezki spelniajacej twoje wymagania.")
 
-
-            print("Możemy zrealizować połączenie, jesli te warunki ci opowiadaja,"
-                " suma opoznien ", exceeded_delay, " minimalna  przepustowosc ", exceeded_bw)
+            print("Realizujemy najlepsze możliwe połączenie:")
+            print(f"suma opoznien: {exceeded_delay}, minimalna  przepustowosc: {exceeded_bw}")
 
     update_score(path[0], user_request,G)
 

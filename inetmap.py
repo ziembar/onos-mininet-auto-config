@@ -59,6 +59,7 @@ class Project( Topo ):
         self.addLink(s3,s4,delay='9ms', bw=80)
         self.addLink(s5,s7,delay='8ms', bw=80)
         self.addLink(s3,s5,delay='9ms', bw=80)
+        self.addLink(s1,s3,delay='8ms', bw=80)
 
 
 

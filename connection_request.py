@@ -14,5 +14,12 @@ class connection_request:
 
     def get_type(self):
         return self.connection_type
+
     def get_delay(self):
         return self.delay
+    
+    def get_source(self):
+        return self.source
+    
+    def get_destination(self):
+        return self.destination

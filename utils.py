@@ -51,7 +51,7 @@ def bootstrap():
                    udp_score=graph_operation.calculate_udp_score(delay, bw, 0, 0))
 
     return net,G
-def create_and_send_flow_rules(path, user_request):
+def create_and_send_flow_rules(path):
     """Creates and sends to localhost onos controller flow rules for a given path.
     -------
     Parameters:

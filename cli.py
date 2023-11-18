@@ -1,28 +1,38 @@
 import utils
 from connection_request import connection_request
 import graph_operation
+import argparse
 
-user_request = connection_request(1,"A","B","TCP",1,100)
-user_request2 = connection_request(2,"A","B","TCP",1,100)
-user_request3 = connection_request(3,"A","B","TCP",1,100)
-user_request_UDP = connection_request(1,"A","B","UDP",41,160)
-user_request_UDP2 = connection_request(2,"A","B","UDP",51,20)
-user_request_TCP = connection_request(2,"A","B","UDP",51,20)
+# Create a parser
+parser = argparse.ArgumentParser(description='Process some variables.')
+parser.add_argument('-f', '--file', help='Input file containing connection requests')
+
+# Parse the arguments
+args = parser.parse_args()
 
 
+user_requests = []
+# Open the file and read each line
+with open(args.file, 'r') as f:
+    i = 0
+    for line in f:
+        try:
+        # Split the line into its components
+            source, destination, connection_type, min_bandwidth, max_delay = line.split()
+            
+            # Convert min_bandwidth and max_delay to integers
+            min_bandwidth = int(min_bandwidth)
+            max_delay = int(max_delay)
+            
+            # Call the connection_request function
+            user_requests.append(connection_request(i, source, destination, connection_type, min_bandwidth, max_delay))
+            i += 1
+        except:
+            print("Invalid input. Please check the input file.")
+            exit()
+
+# Continue with the rest of the program
 net, G =  utils.bootstrap()
-
-best_path = graph_operation.find_best_path("Ateny","Madryt",user_request,G)
-print(best_path)
-second = graph_operation.find_best_path("Ateny","Madryt",user_request2,G)
-print(second)
-third = graph_operation.find_best_path("Ateny","Madryt",user_request,G)
-print(third)
-forth = graph_operation.find_best_path("Ateny","Madryt",user_request_UDP,G)
-print(forth)
-fifth =  graph_operation.find_best_path("Ateny","Madryt",user_request_UDP2,G)
-print(fifth)
-
-
-# subgraph = utils.fit_into_requirements(user_request)
-# print(subgraph)
+for request in user_requests:
+    best_path = graph_operation.find_best_path(request, G)
+    print(best_path)
