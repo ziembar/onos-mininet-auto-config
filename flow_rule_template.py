@@ -1,7 +1,7 @@
-def create_flow_rule(deviceId, outPort, sourceIp, destinationId):
+def create_flow_rule(deviceId, outPort, sourceIp, destinationId, protocolId):
     flow = {
         "priority": 40000,
-        "timeout": 1500,
+        "timeout": 100000,
         "isPermanent": False,
         "deviceId": deviceId,
         "treatment": {
@@ -25,7 +25,8 @@ def create_flow_rule(deviceId, outPort, sourceIp, destinationId):
             {
                 "type": "IPV4_DST",
                 "ip": "{}/32".format(destinationId)
-            }
+            },
+            
             ]
         }
     }

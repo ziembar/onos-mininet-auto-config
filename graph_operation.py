@@ -126,10 +126,10 @@ def find_best_path(user_request,G):
         exceeded_bw, exceeded_delay = find_narrow_throat(path_sub_optimal[0], G)
 
         if (path_sub_optimal[0] == None or exceeded_delay > user_request.delay or exceeded_bw<user_request.bw):
-            print(f"Nie jestesmy w stanie znalezc sciezki dla polaczenia z {user_request.source} do {user_request.destination} spelniajacej twoje wymagania.")
+            print(f"Not able to provide connection with given parameters from {user_request.source} to {user_request.destination}.")
 
-            print("Realizujemy najlepsze możliwe połączenie:")
-            print(f"suma opoznien: {exceeded_delay}, minimalna  przepustowosc: {exceeded_bw}")
+            print("Setting best possible connection instead:")
+            print(f"Total delay: {exceeded_delay}, minimum throughput: {exceeded_bw}")
 
         path = path_sub_optimal
     update_score(path[0], user_request,G)

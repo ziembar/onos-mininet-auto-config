@@ -1,6 +1,4 @@
 from mininet.topo import Topo
-from mininet.node import OVSKernelSwitch
-import mininet
 
 
 class Project( Topo ):

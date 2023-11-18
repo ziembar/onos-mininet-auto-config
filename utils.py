@@ -51,7 +51,7 @@ def bootstrap():
                    udp_score=graph_operation.calculate_udp_score(delay, bw, 0, 0))
 
     return net,G
-def create_and_send_flow_rules(path):
+def create_and_send_flow_rules(path, user_request):
     """Creates and sends to localhost onos controller flow rules for a given path.
     -------
     Parameters:
@@ -88,11 +88,14 @@ def create_and_send_flow_rules(path):
                         break
             if nodeFrontPort != 0 and nodeBackPort != 0:
                 break
-
-
-        flow_rule_front = frt.create_flow_rule(node['deviceId'], nodeFrontPort, srcIp, dstIp)
-        flow_rule_back = frt.create_flow_rule(node['deviceId'], nodeBackPort, dstIp, srcIp)
-
+        if nodeFrontPort == 0 or nodeBackPort == 0:
+            raise Exception(f"Could not find right ports for node {path[i]}")
+        if(user_request.type == "TCP"):
+            flow_rule_front = frt.create_flow_rule(node['deviceId'], nodeFrontPort, srcIp, dstIp, 6)
+            flow_rule_back = frt.create_flow_rule(node['deviceId'], nodeBackPort, dstIp, srcIp, 6)
+        elif(user_request.type == "UDP"):
+            flow_rule_front = frt.create_flow_rule(node['deviceId'], nodeFrontPort, srcIp, dstIp, 17)
+            flow_rule_back = frt.create_flow_rule(node['deviceId'], nodeBackPort, dstIp, srcIp, 17)
 
         flow_rules.append(flow_rule_front)
         flow_rules.append(flow_rule_back)
@@ -109,6 +112,6 @@ def create_and_send_flow_rules(path):
         except Exception as err:
             raise Exception(err)
 
-        return f"[INFO] Successfully added {success} flows to switches."
+    return f"[INFO] Successfully added {success} flows to switches."
     
         

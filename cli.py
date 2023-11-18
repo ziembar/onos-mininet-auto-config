@@ -41,7 +41,8 @@ for request in user_requests:
     print("Attempting to configure flow rules for the path:")
     print(*best_path, sep=' -> ')
     try:
-        print(utils.create_and_send_flow_rules(best_path))
+        print(utils.create_and_send_flow_rules(best_path, request))
+        print('')
     except Exception as error:
         if args.debug:
             print(error)
