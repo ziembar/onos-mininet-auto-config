@@ -25,9 +25,6 @@ def setSwitch(flow, deviceId):
         if response.status_code//100 == 2:
             return "OK"
         else:
-            print(f"[ERROR] Request failed with status code {response.status_code}")
-            print("[ERROR] Response:", response.text)
-            return "ERROR"
+            raise Exception(f"[ERROR] Request failed with status code {response.status_code}")
     except Exception as e:
-        print("[ERROR] Request failed with exception:", e)
-        return "ERROR"
+        raise Exception(f"[ERROR] Request failed with exception {e}. \nCheck if ONOS is running.git")

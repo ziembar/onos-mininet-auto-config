@@ -66,7 +66,6 @@ def create_and_send_flow_rules(path):
     dstIp = find_device_by_name(path[-1])['ip']
 
     success = 0
-    error = 0
 
     for i in range(1, len(path) -1):
         node = find_device_by_name(path[i])
@@ -98,14 +97,18 @@ def create_and_send_flow_rules(path):
         flow_rules.append(flow_rule_front)
         flow_rules.append(flow_rule_back)
 
-        if (request.setSwitch(flow_rule_front, node['deviceId']) == "OK"):
+        try:
+            request.setSwitch(flow_rule_front, node['deviceId'])
             success += 1
-        else:
-            error += 1
-        if(request.setSwitch(flow_rule_back, node['deviceId']) == "OK"):
-            success += 1
-        else:
-            error += 1
+        except Exception as err:
+            raise Exception(err)
 
-    if(error==0):
-        return f"[INFO] Successfully added {success} flows to switches, unsuccessfully {error}"
+        try:
+            request.setSwitch(flow_rule_back, node['deviceId'])
+            success += 1
+        except Exception as err:
+            raise Exception(err)
+
+        return f"[INFO] Successfully added {success} flows to switches."
+    
+        

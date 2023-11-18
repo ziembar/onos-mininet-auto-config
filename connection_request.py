@@ -3,7 +3,7 @@ class connection_request:
         self.id = id
         self.source = source
         self.destination = destination
-        self.connection_type = connection_type
+        self.type = connection_type
         self.bw = bw
         self.delay = delay
     def __str__(self):

@@ -1,0 +1,3 @@
+Warszawa Londyn TCP 50 20
+Ateny Paryz UDP 100 25
+Zagrzeb Madryt TCP 30 30

@@ -6,6 +6,7 @@ import argparse
 # Create a parser
 parser = argparse.ArgumentParser(description='Process some variables.')
 parser.add_argument('-f', '--file', help='Input file containing connection requests')
+parser.add_argument('-d', '--debug', action='store_true', default=False, help='Enable debug mode')
 
 # Parse the arguments
 args = parser.parse_args()
@@ -27,12 +28,24 @@ with open(args.file, 'r') as f:
             # Call the connection_request function
             user_requests.append(connection_request(i, source, destination, connection_type, min_bandwidth, max_delay))
             i += 1
-        except:
+
+        except Exception as error:
             print("Invalid input. Please check the input file.")
+            print(error)
             exit()
 
 # Continue with the rest of the program
 net, G =  utils.bootstrap()
 for request in user_requests:
     best_path = graph_operation.find_best_path(request, G)
-    print(best_path)
+    print("Attempting to configure flow rules for the path:")
+    print(*best_path, sep=' -> ')
+    try:
+        print(utils.create_and_send_flow_rules(best_path))
+    except Exception as error:
+        if args.debug:
+            print(error)
+        else:
+            print("[ERROR] Cannot create and send flow rules (for debug use -d flag).")
+        print("Aborting...")
+        exit()

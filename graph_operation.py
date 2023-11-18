@@ -36,9 +36,11 @@ def best_path_helper(user_request, subgraph):
 
 def calculate_delay(path, G):
     delay_sum = 0
+
     for i in range(len(path) - 1):
         u = path[i]
         v = path[i + 1]
+
         data = G.get_edge_data(u, v)
         delay_sum = delay_sum + data['delay']
     return delay_sum
@@ -110,8 +112,8 @@ def find_best_path(user_request,G):
     path = best_path_helper(user_request, subgraph)
 
     #Sprawdzanie delay
-    delay_sum = calculate_delay(path[0], G)
-    print(delay_sum)
+    if (path[0] != None):
+        delay_sum = calculate_delay(path[0], G)
 
 
     if (path[0] == None or delay_sum > user_request.delay):
@@ -124,7 +126,7 @@ def find_best_path(user_request,G):
         exceeded_bw, exceeded_delay = find_narrow_throat(path_sub_optimal[0], G)
 
         if (path_sub_optimal[0] == None or exceeded_delay > user_request.delay or exceeded_bw<user_request.bw):
-            print("Nie jestesmy w stanine znalezc zadnej sciezki spelniajacej twoje wymagania.")
+            print(f"Nie jestesmy w stanie znalezc sciezki dla polaczenia z {user_request.source} do {user_request.destination} spelniajacej twoje wymagania.")
 
             print("Realizujemy najlepsze możliwe połączenie:")
             print(f"suma opoznien: {exceeded_delay}, minimalna  przepustowosc: {exceeded_bw}")
@@ -132,7 +134,7 @@ def find_best_path(user_request,G):
         path = path_sub_optimal
     update_score(path[0], user_request,G)
 
-    return path
+    return path[0]
 
 
 def calculate_paths(source_node, destination_node,G):
