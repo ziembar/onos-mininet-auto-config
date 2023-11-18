@@ -1,1 +1,1 @@
-Warszawa Londyn TCP 50 20
+Zagrzeb Rzym ICMP 50 20

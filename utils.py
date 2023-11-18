@@ -90,13 +90,18 @@ def create_and_send_flow_rules(path, user_request):
                 break
         if nodeFrontPort == 0 or nodeBackPort == 0:
             raise Exception(f"Could not find right ports for node {path[i]}")
+        
+        protocolId = 1
         if(user_request.type == "TCP"):
-            flow_rule_front = frt.create_flow_rule(node['deviceId'], nodeFrontPort, srcIp, dstIp, 6)
-            flow_rule_back = frt.create_flow_rule(node['deviceId'], nodeBackPort, dstIp, srcIp, 6)
+            protocolId = 6
         elif(user_request.type == "UDP"):
-            flow_rule_front = frt.create_flow_rule(node['deviceId'], nodeFrontPort, srcIp, dstIp, 17)
-            flow_rule_back = frt.create_flow_rule(node['deviceId'], nodeBackPort, dstIp, srcIp, 17)
-
+            protocolId = 17
+        elif(user_request.type == "ICMP"):
+            protocolId = 1
+        
+        flow_rule_front = frt.create_flow_rule(node['deviceId'], nodeFrontPort, srcIp, dstIp, protocolId)
+        flow_rule_back = frt.create_flow_rule(node['deviceId'], nodeBackPort, dstIp, srcIp, protocolId)
+        
         flow_rules.append(flow_rule_front)
         flow_rules.append(flow_rule_back)
 

@@ -15,7 +15,7 @@ def fit_into_requirements(user_request, G):
     return subgraph
 
 def best_path_helper(user_request, subgraph):
-    if (user_request.type == "TCP"):
+    if (user_request.type == "TCP" or user_request.type == "ICMP"):
         try:
             path = nx.shortest_path(subgraph, source=user_request.source, target=user_request.destination,
                                     weight="tcp_score", method="dijkstra")
@@ -50,7 +50,7 @@ def update_score(nodes, user_request,G):
         u = nodes[i]
         v = nodes[i + 1]
         data = G.get_edge_data(u, v)
-        if (user_request.type == 'TCP'):
+        if (user_request.type == 'TCP' or user_request.type == 'ICMP'):
             new_tcp_score = calculate_tcp_score(data['delay'], data['bw'] - user_request.bw,
                                                 data['active_tcp'] + 1, data['active_udp'])
             new_udp_score = calculate_udp_score(data['delay'], data['bw'] - user_request.bw,
