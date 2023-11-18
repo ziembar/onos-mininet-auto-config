@@ -121,6 +121,7 @@ def find_best_path(source_node, destination_node,user_request,G):
 
             print("Możemy zrealizować połączenie, jesli te warunki ci opowiadaja,"
                 " suma opoznien ", exceeded_delay, " minimalna  przepustowosc ", exceeded_bw)
+        path = path_sub_optimal
 
     update_score(path[0], user_request,G)
 
