@@ -14,26 +14,29 @@ args = parser.parse_args()
 
 user_requests = []
 # Open the file and read each line
-with open(args.file, 'r') as f:
-    i = 0
-    for line in f:
-        try:
-        # Split the line into its components
-            source, destination, connection_type, min_bandwidth, max_delay = line.split()
-            
-            # Convert min_bandwidth and max_delay to integers
-            min_bandwidth = int(min_bandwidth)
-            max_delay = int(max_delay)
-            
-            # Call the connection_request function
-            user_requests.append(connection_request(i, source, destination, connection_type, min_bandwidth, max_delay))
-            i += 1
+try:
+    with open(args.file, 'r') as f:
+        i = 0
+        for line in f:
+            try:
+            # Split the line into its components
+                source, destination, connection_type, min_bandwidth, max_delay = line.split()
+                
+                # Convert min_bandwidth and max_delay to integers
+                min_bandwidth = int(min_bandwidth)
+                max_delay = int(max_delay)
+                
+                # Call the connection_request function
+                user_requests.append(connection_request(i, source, destination, connection_type, min_bandwidth, max_delay))
+                i += 1
 
-        except Exception as error:
-            print("Invalid input. Please check the input file.")
-            print(error)
-            exit()
-
+            except Exception as error:
+                print("Invalid input. Please check the input file.")
+                print(error)
+                exit()
+except:
+    print("Invalid input file.")
+    exit()
 # Continue with the rest of the program
 net, G =  utils.bootstrap()
 for request in user_requests:

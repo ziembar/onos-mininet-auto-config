@@ -1,1 +1,3 @@
-Zagrzeb Rzym ICMP 50 20
+Praga Rzym UDP 60 25
+Praga Rzym TCP 30 25
+Warszawa Rzym TCP 60 100

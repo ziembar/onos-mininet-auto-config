@@ -6,11 +6,14 @@ bw_constant_tcp = 1/20
 delay_constant_udp = 1
 bw_constant_udp = 1/10
 
+# % of BW that need to stay empty
+reserve_constant = 0.2
+
 def fit_into_requirements(user_request, G):
     subgraph = nx.Graph()
 
     for u, v, data in G.edges(data=True):
-        if data['current_bw'] >= user_request.bw:
+        if data['current_bw']*(1-reserve_constant) >= user_request.bw:
             subgraph.add_edge(u, v, **data)
     return subgraph
 
