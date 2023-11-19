@@ -80,18 +80,20 @@ def calculate_tcp_score(delay, current_bw, active_tcp, active_udp):
     -avg delay 5 and median 4 (!)
     hard to say how many TCP/UDP transmisions we will have to service and this may alos affect transmision
     """
-    delay_factor = delay*delay_constant_tcp
+
+    delay_fun = (25/3)*delay-25
     if(active_tcp==0):
-        bw_factor = (-1)*current_bw*bw_constant_tcp
+        bw_fun = (-5/8)*current_bw +50
     else:
-        bw_factor = (-1)*(current_bw/active_tcp)*bw_constant_tcp
-    score = 50 + delay_factor+bw_factor
+        bw_fun = (-5/8)*(current_bw/active_tcp)+50
+
+    score = delay_fun + bw_fun
     return score
 
 def calculate_udp_score(delay, current_bw, active_tcp, active_udp):
-    delay_factor = delay*delay_constant_udp
-    bw_factor = (-1)*current_bw*bw_constant_udp
-    score = 100 + delay_factor+bw_factor
+    delay_fun = (5/3)*delay-5
+    bw_fun = (-9/8) * current_bw + 90
+    score = 100 + delay_fun+bw_fun
     return score
 
 def find_narrow_throat(path, G):
